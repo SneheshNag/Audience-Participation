@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>yo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>jQuery UI Slider - Default functionality</title>
+    <style>
+    #handle{
+      width: auto;
+      height: 1.5em;
+      margin-top: 5em;;
+      margin-bottom: 5em;
+    }
+    #slider{
+      width: 30em;
+      height: 1em;
+      margin-top: 7em;
+
+
+    }
+    #custom-handle {
+      width: 3em;
+      height: 1.6em;
+      top: 50%;
+      margin-top: -.8em;
+      text-align: center;
+      line-height: 1.6em;
+    }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+    </script>
+  </head>
+  <body>
+    <div id="chatroom">
+      <div id="chat-window">
+        <div id="output"></div>
+      </div>
+      <div>
+        <input id="handle" type="text" placeholder="Handle" />
+        <button id="send">Send</button>
+      </div>
+      <div id="slider">
+        <div id="custom-handle" class="ui-slider-handle"> </div>
+      </div>
+    </div>
+    <script>
+    $(function() {
+      var handle = $( "#custom-handle" );
+      $( "#slider" ).slider({
+        min: 0,
+        max: 127,
+        create: function() {
+          handle.text( $( this ).slider( "value" ) );
+        },
+        slide: function( event, ui ) {
+            console.log(ui.value);
+            if(socket){
+                socket.emit("chat", {handle: handle, amount: ui.value});
+            }
+
+          handle.text( ui.value );
+        }
+      });
+    });
+    </script>
+
+    
+    <script>
+    socket.on('chat', function(data){
+      output.innerHTML = '<p><strong>' + data.handle + ': </strong>' + data.amount + '</p';
+    });
+    </script>
+  </body>
+</html>
